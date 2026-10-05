@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#FF121212</color>
+    <color name="row_focus">#FF2E5C9E</color>
+    <color name="accent">#FFE53935</color>
+    <color name="text_secondary">#FFB0B0B0</color>
+
+    <style name="AppTheme" parent="@android:style/Theme.Material">
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:colorPrimary">@color/bg</item>
+        <item name="android:colorPrimaryDark">@color/bg</item>
+    </style>
+
+    <style name="PopupTheme" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:statusBarColor">@color/bg</item>
+    </style>
+</resources>

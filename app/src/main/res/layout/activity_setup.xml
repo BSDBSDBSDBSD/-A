@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="@string/setup_intro"
+            android:textAlignment="viewStart" />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="6dp"
+            android:textSize="16sp"
+            android:lineSpacingExtra="2dp"
+            android:textAlignment="viewStart" />
+
+        <Button android:id="@+id/btn_perms" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="@string/btn_perms" />
+        <Button android:id="@+id/btn_overlay" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="@string/btn_overlay" />
+        <Button android:id="@+id/btn_xiaomi" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="@string/btn_xiaomi" />
+        <Button android:id="@+id/btn_autostart" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="@string/btn_autostart" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="13sp"
+            android:text="@string/xiaomi_note"
+            android:textAlignment="viewStart" />
+
+        <Button android:id="@+id/btn_test" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="@string/btn_test" />
+
+        <CheckBox
+            android:id="@+id/chk_seen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/chk_seen" />
+
+        <Button android:id="@+id/btn_hide" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginTop="8dp"
+            android:text="@string/btn_hide_icon" />
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">שיחות שלא נענו</string>
+    <string name="channel_name">שיחות שלא נענו</string>
+    <string name="no_missed">אין שיחות שלא נענו</string>
+    <string name="one_missed">שיחה אחת שלא נענתה</string>
+    <string name="n_missed">%1$d שיחות שלא נענו</string>
+    <string name="private_number">מספר חסוי</string>
+    <string name="yesterday">אתמול</string>
+    <string name="hint">OK / מקש ירוק = חיוג חוזר · החזקה או תפריט = אפשרויות</string>
+    <string name="btn_clear">נקה הכל</string>
+    <string name="btn_close">סגור</string>
+    <string name="opt_call">התקשר</string>
+    <string name="opt_sms">שלח הודעה</string>
+    <string name="opt_remove">הסר מהרשימה</string>
+
+    <string name="setup_intro">כדי שהמסך יקפוץ אחרי שיחה שלא נענתה, גם כשהמכשיר נעול, יש לאשר את ההרשאות לפי הסדר. אחרי שכל השורות מסומנות ✓ אין צורך לפתוח את האפליקציה שוב.</string>
+    <string name="btn_perms">1. אישור הרשאות</string>
+    <string name="btn_overlay">2. הצגה מעל אפליקציות אחרות</string>
+    <string name="btn_xiaomi">3. שיאומי: מסך נעילה וחלונות קופצים</string>
+    <string name="btn_autostart">4. שיאומי: הפעלה אוטומטית</string>
+    <string name="xiaomi_note">בשלב 3 יש להפעיל "הצגה במסך הנעילה" ו"הצגת חלונות קופצים בזמן ריצה ברקע". בשלב 4 יש להפעיל את האפליקציה ברשימה.</string>
+    <string name="btn_test">הצג את המסך עכשיו</string>
+    <string name="chk_seen">לא להציג שיחות שכבר נצפו ביומן השיחות</string>
+    <string name="btn_hide_icon">הסתר אייקון מהתפריט</string>
+    <string name="btn_show_icon">החזר אייקון לתפריט</string>
+    <string name="hide_warning">האפליקציה תמשיך לעבוד גם בלי האייקון. כדי לחזור להגדרות: לחייג *#*#6477#*#* (עובד ברוב המכשירים), או להתקין את האפליקציה מחדש.</string>
+    <string name="autostart_missing">לא נמצא מסך "הפעלה אוטומטית" במכשיר הזה. אם השיחות לא מזוהות, בדוק בהגדרות האפליקציה שאין הגבלת סוללה.</string>
+
+    <string name="st_phone">מצב טלפון</string>
+    <string name="st_calllog">יומן שיחות</string>
+    <string name="st_contacts">אנשי קשר (להצגת שם)</string>
+    <string name="st_call">חיוג ישיר</string>
+    <string name="st_notif">התראות</string>
+    <string name="st_overlay">הצגה מעל אפליקציות אחרות</string>
+</resources>
