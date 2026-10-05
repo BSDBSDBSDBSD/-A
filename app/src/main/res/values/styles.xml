@@ -5,15 +5,10 @@
     <color name="accent">#FFE53935</color>
     <color name="text_secondary">#FFB0B0B0</color>
 
-    <style name="AppTheme" parent="@android:style/Theme.Material">
-        <item name="android:colorAccent">@color/accent</item>
-        <item name="android:colorPrimary">@color/bg</item>
-        <item name="android:colorPrimaryDark">@color/bg</item>
-    </style>
+    <!-- אנדרואיד 4.x -->
+    <style name="AppTheme" parent="@android:style/Theme.Holo" />
 
-    <style name="PopupTheme" parent="@android:style/Theme.Material.NoActionBar">
+    <style name="PopupTheme" parent="@android:style/Theme.Holo.NoActionBar">
         <item name="android:windowBackground">@color/bg</item>
-        <item name="android:colorAccent">@color/accent</item>
-        <item name="android:statusBarColor">@color/bg</item>
     </style>
 </resources>

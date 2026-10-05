@@ -103,9 +103,11 @@ final class Notifier {
                 .setContentIntent(pi)
                 .setFullScreenIntent(pi, true)
                 .setAutoCancel(true)
-                .setOnlyAlertOnce(true)
-                .setCategory(Notification.CATEGORY_CALL)
-                .setVisibility(Notification.VISIBILITY_PUBLIC);
+                .setOnlyAlertOnce(true);
+        if (Build.VERSION.SDK_INT >= 21) {
+            b.setCategory(Notification.CATEGORY_CALL)
+                    .setVisibility(Notification.VISIBILITY_PUBLIC);
+        }
         try {
             nm.notify(NOTIF_ID, b.build());
         } catch (SecurityException ignored) {
