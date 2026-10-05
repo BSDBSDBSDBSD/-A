@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -29,3 +32,13 @@ jobs:
         with:
           name: MissedCalls-apk
           path: app/build/outputs/apk/release/*.apk
+
+      - name: Rename APK
+        run: cp app/build/outputs/apk/release/app-release.apk MissedCalls.apk
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: MissedCalls build ${{ github.run_number }}
+          files: MissedCalls.apk
+          make_latest: true
