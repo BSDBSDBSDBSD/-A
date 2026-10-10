@@ -237,6 +237,14 @@ public class MissedCallsActivity extends Activity {
             callBack(e);
             return true;
         }
+        if (keyCode == KeyEvent.KEYCODE_STAR && e != null) {   // * - הודעה
+            sendSms(e);
+            return true;
+        }
+        if (keyCode == KeyEvent.KEYCODE_POUND && e != null) {  // # - הסרה
+            remove(e);
+            return true;
+        }
         if (keyCode == KeyEvent.KEYCODE_MENU && e != null) {   // מקש התפריט
             showOptions(e);
             return true;

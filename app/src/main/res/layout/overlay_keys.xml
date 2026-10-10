@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/ov_title"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textSize="14sp"
-    android:textStyle="bold"
+    android:layout_marginTop="5dp"
+    android:gravity="center"
+    android:padding="4dp"
+    android:focusable="false"
+    android:textSize="12sp"
     android:textColor="#FFFFFFFF"
     android:shadowColor="#FF000000"
-    android:shadowRadius="4"
-    android:paddingLeft="4dp"
-    android:paddingRight="4dp"
-    android:textAlignment="viewStart" />
+    android:shadowRadius="3"
+    android:background="#80000000"
+    android:text="@string/overlay_keys" />

@@ -10,8 +10,8 @@
     android:background="@drawable/overlay_card_bg"
     android:paddingLeft="10dp"
     android:paddingStart="10dp"
-    android:paddingRight="6dp"
-    android:paddingEnd="6dp"
+    android:paddingRight="10dp"
+    android:paddingEnd="10dp"
     android:paddingTop="6dp"
     android:paddingBottom="6dp">
 
@@ -66,29 +66,4 @@
         android:layout_marginRight="4dp"
         android:layout_marginEnd="4dp" />
 
-    <ImageView
-        android:id="@+id/ov_sms"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        android:src="@drawable/ic_ov_sms"
-        android:scaleType="center"
-        android:focusable="true"
-        android:clickable="true"
-        android:background="@drawable/overlay_btn_bg"
-        android:contentDescription="@string/opt_sms"
-        android:layout_marginLeft="4dp"
-        android:layout_marginStart="4dp" />
-
-    <ImageView
-        android:id="@+id/ov_close"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
-        android:src="@drawable/ic_ov_close"
-        android:scaleType="center"
-        android:focusable="true"
-        android:clickable="true"
-        android:background="@drawable/overlay_btn_bg"
-        android:contentDescription="@string/opt_remove"
-        android:layout_marginLeft="4dp"
-        android:layout_marginStart="4dp" />
 </LinearLayout>

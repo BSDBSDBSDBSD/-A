@@ -22,8 +22,9 @@ import java.util.List;
  * חלונות שקופים קטנים, אחד לכל מתקשר, שצפים בראש המסך מעל המסך הראשי.
  * אין שירות ברקע ואין טיימרים: החלונות הם תצוגה בלבד ולא צורכים סוללה כשהם מוצגים.
  *
- * מקשים: חצים - מעבר בין חלונות וכפתורים | OK או מקש ירוק - חיוג חוזר | חזור - הסתרה.
- * מגע: נגיעה בחלון - חיוג חוזר | ✉ - הודעה | ✕ - הסרת המתקשר הזה.
+ * בנוי למכשיר מקשים בלבד, בלי מגע:
+ *   למעלה/למטה - מעבר בין חלונות | OK או ירוק - חיוג חוזר | * - הודעה
+ *   # - הסרת המתקשר הזה | 0 - נקה הכל | חזור - הסתרה (השיחות נשמרות)
  */
 final class OverlayManager {
     private static final int MAX_CARDS = 5;
@@ -121,22 +122,11 @@ final class OverlayManager {
         root.removeAllViews();
         LayoutInflater inf = LayoutInflater.from(c);
 
-        // שורת כותרת: מספר השיחות, "נקה הכל" ו"הסתר"
         View header = inf.inflate(R.layout.overlay_header, root, false);
         int total = CallLogReader.totalCalls(list);
         ((TextView) header.findViewById(R.id.ov_title)).setText(total == 1
                 ? c.getString(R.string.one_missed)
                 : c.getString(R.string.n_missed, total));
-        header.findViewById(R.id.ov_clear).setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                Prefs.clearAll(c);
-                Notifier.cancel(c);
-                hide(c);
-            }
-        });
-        header.findViewById(R.id.ov_hide).setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) { hide(c); }
-        });
         root.addView(header);
 
         int shown = Math.min(list.size(), MAX_CARDS);
@@ -155,6 +145,9 @@ final class OverlayManager {
             });
             root.addView(more);
         }
+
+        // שורת עזרה קבועה: מה עושה כל מקש
+        root.addView(inf.inflate(R.layout.overlay_keys, root, false));
         root.focusFirst();
     }
 
@@ -163,45 +156,28 @@ final class OverlayManager {
         TextView name = card.findViewById(R.id.ov_name);
         TextView details = card.findViewById(R.id.ov_details);
         TextView count = card.findViewById(R.id.ov_count);
-        View sms = card.findViewById(R.id.ov_sms);
-        View close = card.findViewById(R.id.ov_close);
 
+        // שם איש הקשר, או המספר אם אין שם. מתחת רק השעה
         name.setText(MissedCallsActivity.displayName(c, e));
-        String time = MissedCallsActivity.formatTime(c, e.lastTime);
-        // שם איש הקשר, או המספר אם אין שם - בלי כפילות. מתחת רק השעה
-        details.setText(time);
+        details.setText(MissedCallsActivity.formatTime(c, e.lastTime));
         if (e.count > 1) {
             count.setVisibility(View.VISIBLE);
             count.setText("×" + e.count);
         } else {
             count.setVisibility(View.GONE);
         }
-        if (Actions.isPrivate(e)) sms.setVisibility(View.GONE);
 
         card.setTag(e);
-        card.setOnClickListener(new View.OnClickListener() {
+        card.setOnClickListener(new View.OnClickListener() {   // OK
             @Override public void onClick(View v) {
                 Actions.call(c, e);
                 refresh(c);
             }
         });
-        sms.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                hide(c);
-                Actions.sms(c, e);
-            }
-        });
-        close.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                Prefs.dismissIds(c, e.ids);
-                refresh(c);
-                if (root == null) Notifier.cancel(c);
-            }
-        });
         return card;
     }
 
-    /** המיכל של כל החלונות. מטפל במקשים של מכשירי המקשים. */
+    /** המיכל של כל החלונות. מטפל במקשים. */
     private static final class Root extends LinearLayout {
         Root(Context c) {
             super(c);
@@ -231,36 +207,60 @@ final class OverlayManager {
             return null;
         }
 
+        private void later(Runnable r) { post(r); }
+
         @Override
         public boolean dispatchKeyEvent(KeyEvent event) {
             final Context c = getContext();
             int k = event.getKeyCode();
-            boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
+            // פעולות מתבצעות בעזיבת המקש, כדי שהעזיבה לא תגיע לאפליקציה שמתחת
+            boolean up = event.getAction() == KeyEvent.ACTION_UP;
+            final CallLogReader.Entry e = focusedEntry();
             switch (k) {
                 case KeyEvent.KEYCODE_DPAD_UP:
                 case KeyEvent.KEYCODE_DPAD_DOWN:
-                case KeyEvent.KEYCODE_DPAD_LEFT:
-                case KeyEvent.KEYCODE_DPAD_RIGHT:
                 case KeyEvent.KEYCODE_DPAD_CENTER:
                 case KeyEvent.KEYCODE_ENTER:
                     return super.dispatchKeyEvent(event);
-                case KeyEvent.KEYCODE_CALL: {   // המקש הירוק
-                    if (down) {
-                        final CallLogReader.Entry e = focusedEntry();
-                        if (e != null) {
-                            post(new Runnable() {
-                                @Override public void run() { Actions.call(c, e); refresh(c); }
-                            });
-                        }
-                    }
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                    return true;   // אין מה לעשות לצדדים
+                case KeyEvent.KEYCODE_CALL:          // מקש ירוק - חיוג חוזר
+                    if (up && e != null) later(new Runnable() {
+                        @Override public void run() { Actions.call(c, e); refresh(c); }
+                    });
                     return true;
-                }
-                case KeyEvent.KEYCODE_BACK:
-                    if (!down) post(new Runnable() { @Override public void run() { hide(c); } });
+                case KeyEvent.KEYCODE_STAR:          // * - הודעה
+                    if (up && e != null && !Actions.isPrivate(e)) later(new Runnable() {
+                        @Override public void run() { hide(c); Actions.sms(c, e); }
+                    });
+                    return true;
+                case KeyEvent.KEYCODE_POUND:         // # - הסרת המתקשר הזה
+                    if (up && e != null) later(new Runnable() {
+                        @Override public void run() {
+                            Prefs.dismissIds(c, e.ids);
+                            refresh(c);
+                            if (root == null) Notifier.cancel(c);
+                        }
+                    });
+                    return true;
+                case KeyEvent.KEYCODE_0:             // 0 - נקה הכל
+                    if (up) later(new Runnable() {
+                        @Override public void run() {
+                            Prefs.clearAll(c);
+                            Notifier.cancel(c);
+                            hide(c);
+                        }
+                    });
+                    return true;
+                case KeyEvent.KEYCODE_BACK:          // חזור - הסתרה בלבד
+                    if (up) later(new Runnable() { @Override public void run() { hide(c); } });
                     return true;
                 default:
-                    // כל מקש אחר (ספרות, תפריט, בית) - מסתיר את החלונות ומחזיר את השליטה למסך הראשי
-                    if (down) post(new Runnable() { @Override public void run() { hide(c); } });
+                    // כל מקש אחר (ספרה, תפריט, בית) - מסתיר ומחזיר את השליטה למסך הראשי
+                    if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                        later(new Runnable() { @Override public void run() { hide(c); } });
+                    }
                     return false;
             }
         }
