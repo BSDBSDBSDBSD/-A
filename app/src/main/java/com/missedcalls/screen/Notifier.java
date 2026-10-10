@@ -1,5 +1,6 @@
 package com.missedcalls.screen;
 
+import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,36 +13,39 @@ import android.provider.Settings;
 
 import java.util.List;
 
-/** הקפצת המסך המרוכז, עם התראה כגיבוי. */
+/**
+ * מציג את החלונות השקופים על המסך. התראה רגילה משמשת רק כגיבוי:
+ * כשאין הרשאת "הצגה מעל אפליקציות", או כשהמכשיר נעול באנדרואיד 8+ (שם החלונות מופיעים אחרי פתיחת הנעילה).
+ */
 final class Notifier {
     private static final String CHANNEL = "missed_calls_popup";
     static final int NOTIF_ID = 6477;
 
     private Notifier() {}
 
-    /** מציג את המסך אם יש שיחות שלא טופלו. מחזיר true אם נמצאו שיחות. */
+    /** מציג את השיחות אם יש כאלה שלא טופלו. מחזיר true אם נמצאו שיחות. */
     static boolean showIfAny(Context c) {
         List<CallLogReader.Entry> list = CallLogReader.load(c);
         if (list.isEmpty()) return false;
-        int total = CallLogReader.totalCalls(list);
 
-        wakeScreen(c);
-        postNotification(c, total, list.get(0));
-
-        // פתיחה ישירה של המסך. באנדרואיד 10+ זה דורש את הרשאת "הצגה מעל אפליקציות אחרות",
-        // ובשיאומי גם "הצגת חלונות קופצים בזמן ריצה ברקע".
-        if (Build.VERSION.SDK_INT < 29 || canOverlay(c)) {
-            try {
-                c.startActivity(screenIntent(c));
-            } catch (Exception ignored) {
-                // ההתראה (full-screen intent) תפתח את המסך במקום
-            }
+        if (canOverlay(c)) {
+            OverlayManager.show(c, list);
+            boolean hiddenByLock = Build.VERSION.SDK_INT >= 26 && isLocked(c);
+            if (hiddenByLock) postNotification(c, list); else cancel(c);
+        } else {
+            postNotification(c, list);
         }
+        wakeScreenBriefly(c);
         return true;
     }
 
     static boolean canOverlay(Context c) {
         return Build.VERSION.SDK_INT < 23 || Settings.canDrawOverlays(c);
+    }
+
+    static boolean isLocked(Context c) {
+        KeyguardManager km = (KeyguardManager) c.getSystemService(Context.KEYGUARD_SERVICE);
+        return km != null && km.inKeyguardRestrictedInputMode();
     }
 
     static Intent screenIntent(Context c) {
@@ -57,42 +61,48 @@ final class Notifier {
         if (nm != null) nm.cancel(NOTIF_ID);
     }
 
+    /**
+     * מדליק את המסך ל-3 שניות בלבד אם הוא כבוי, כדי שיראו את השיחה.
+     * אחרי זה המסך נכבה לפי זמן הכיבוי הרגיל של המכשיר.
+     */
     @SuppressWarnings("deprecation")
-    private static void wakeScreen(Context c) {
+    private static void wakeScreenBriefly(Context c) {
         try {
             PowerManager pm = (PowerManager) c.getSystemService(Context.POWER_SERVICE);
-            if (pm == null) return;
+            if (pm == null || pm.isScreenOn()) return;
             PowerManager.WakeLock wl = pm.newWakeLock(
-                    PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                    PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP,
                     "missedcalls:wake");
-            wl.acquire(5000);
+            wl.setReferenceCounted(false);
+            wl.acquire(3000);
         } catch (Exception ignored) {
         }
     }
 
     @SuppressWarnings("deprecation")
-    private static void postNotification(Context c, int total, CallLogReader.Entry last) {
+    private static void postNotification(Context c, List<CallLogReader.Entry> list) {
         NotificationManager nm = (NotificationManager) c.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null) return;
+        int total = CallLogReader.totalCalls(list);
 
         Notification.Builder b;
         if (Build.VERSION.SDK_INT >= 26) {
             NotificationChannel ch = new NotificationChannel(CHANNEL,
-                    c.getString(R.string.channel_name), NotificationManager.IMPORTANCE_HIGH);
+                    c.getString(R.string.channel_name), NotificationManager.IMPORTANCE_DEFAULT);
             ch.setSound(null, null);   // המכשיר כבר צלצל, אין צורך ברעש נוסף
+            ch.enableVibration(false);
             ch.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
             nm.createNotificationChannel(ch);
             b = new Notification.Builder(c, CHANNEL);
         } else {
             b = new Notification.Builder(c);
-            b.setPriority(Notification.PRIORITY_HIGH);
         }
 
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         if (Build.VERSION.SDK_INT >= 23) flags |= PendingIntent.FLAG_IMMUTABLE;
         PendingIntent pi = PendingIntent.getActivity(c, 0, screenIntent(c), flags);
 
-        String who = MissedCallsActivity.displayName(c, last);
+        String who = MissedCallsActivity.displayName(c, list.get(0));
         String title = total == 1
                 ? c.getString(R.string.one_missed)
                 : c.getString(R.string.n_missed, total);
@@ -101,17 +111,15 @@ final class Notifier {
                 .setContentTitle(title)
                 .setContentText(who)
                 .setContentIntent(pi)
-                .setFullScreenIntent(pi, true)
                 .setAutoCancel(true)
                 .setOnlyAlertOnce(true);
         if (Build.VERSION.SDK_INT >= 21) {
-            b.setCategory(Notification.CATEGORY_CALL)
+            b.setCategory("missed_call")   // Notification.CATEGORY_MISSED_CALL
                     .setVisibility(Notification.VISIBILITY_PUBLIC);
         }
         try {
             nm.notify(NOTIF_ID, b.build());
         } catch (SecurityException ignored) {
-            // אין הרשאת התראות - המסך עדיין ייפתח ישירות אם יש הרשאת הצגה מעל אפליקציות
         }
     }
 }

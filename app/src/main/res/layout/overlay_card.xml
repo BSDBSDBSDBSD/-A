@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:focusable="true"
+    android:clickable="true"
+    android:background="@drawable/overlay_card_bg"
+    android:paddingLeft="10dp"
+    android:paddingStart="10dp"
+    android:paddingRight="6dp"
+    android:paddingEnd="6dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="6dp">
+
+    <ImageView
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_stat_missed"
+        android:tint="@color/accent"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/ov_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFFFF"
+            android:shadowColor="#FF000000"
+            android:shadowRadius="3"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textAlignment="viewStart" />
+
+        <TextView
+            android:id="@+id/ov_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:textColor="#FFE0E0E0"
+            android:shadowColor="#FF000000"
+            android:shadowRadius="3"
+            android:singleLine="true"
+            android:textAlignment="viewStart" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/ov_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#FFFF6F60"
+        android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginEnd="4dp" />
+
+    <ImageView
+        android:id="@+id/ov_sms"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:src="@drawable/ic_ov_sms"
+        android:scaleType="center"
+        android:focusable="true"
+        android:clickable="true"
+        android:background="@drawable/overlay_btn_bg"
+        android:contentDescription="@string/opt_sms"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp" />
+
+    <ImageView
+        android:id="@+id/ov_close"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:src="@drawable/ic_ov_close"
+        android:scaleType="center"
+        android:focusable="true"
+        android:clickable="true"
+        android:background="@drawable/overlay_btn_bg"
+        android:contentDescription="@string/opt_remove"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp" />
+</LinearLayout>

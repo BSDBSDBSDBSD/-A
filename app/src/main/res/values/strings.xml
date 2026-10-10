@@ -10,17 +10,20 @@
     <string name="hint">OK / מקש ירוק = חיוג חוזר · החזקה או תפריט = אפשרויות</string>
     <string name="btn_clear">נקה הכל</string>
     <string name="btn_close">סגור</string>
+    <string name="btn_hide">הסתר</string>
+    <string name="overlay_more">+%1$d נוספים – לרשימה המלאה</string>
+    <string name="demo_name">דוגמה – כך זה ייראה</string>
     <string name="opt_call">התקשר</string>
     <string name="opt_sms">שלח הודעה</string>
     <string name="opt_remove">הסר מהרשימה</string>
 
-    <string name="setup_intro">כדי שהמסך יקפוץ אחרי שיחה שלא נענתה, גם כשהמכשיר נעול, יש לאשר את ההרשאות לפי הסדר. אחרי שכל השורות מסומנות ✓ אין צורך לפתוח את האפליקציה שוב.</string>
+    <string name="setup_intro">כדי שיופיעו חלונות שקופים על המסך אחרי שיחה שלא נענתה, יש לאשר את ההרשאות לפי הסדר. אחרי שכל השורות מסומנות ✓ אין צורך לפתוח את האפליקציה שוב.</string>
     <string name="btn_perms">1. אישור הרשאות</string>
     <string name="btn_overlay">2. הצגה מעל אפליקציות אחרות</string>
     <string name="btn_xiaomi">3. שיאומי: מסך נעילה וחלונות קופצים</string>
     <string name="btn_autostart">4. שיאומי: הפעלה אוטומטית</string>
     <string name="xiaomi_note">בשלב 3 יש להפעיל "הצגה במסך הנעילה" ו"הצגת חלונות קופצים בזמן ריצה ברקע". בשלב 4 יש להפעיל את האפליקציה ברשימה.</string>
-    <string name="btn_test">הצג את המסך עכשיו</string>
+    <string name="btn_test">הצג חלונות לדוגמה</string>
     <string name="chk_seen">לא להציג שיחות שכבר נצפו ביומן השיחות</string>
     <string name="btn_hide_icon">הסתר אייקון מהתפריט</string>
     <string name="btn_show_icon">החזר אייקון לתפריט</string>

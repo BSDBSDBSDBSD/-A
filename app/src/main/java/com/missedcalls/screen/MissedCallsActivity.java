@@ -90,6 +90,12 @@ public class MissedCallsActivity extends Activity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        OverlayManager.refresh(this);   // שינויים כאן מתעדכנים גם בחלונות השקופים
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         reload();
@@ -118,16 +124,14 @@ public class MissedCallsActivity extends Activity {
 
     // ---------- מסך נעילה ----------
 
+    /** המסך נפתח רק בלחיצה של המשתמש (מההתראה או מההגדרות), ולכן לא מדליק את המסך ולא משאיר אותו דולק. */
     @SuppressWarnings("deprecation")
     private void showOverLockScreen() {
         if (Build.VERSION.SDK_INT >= 27) {
             setShowWhenLocked(true);
-            setTurnScreenOn(true);
         } else {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
-                    | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         }
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private boolean isLocked() {
@@ -153,7 +157,7 @@ public class MissedCallsActivity extends Activity {
     // ---------- פעולות ----------
 
     private static boolean isPrivate(CallLogReader.Entry e) {
-        return TextUtils.isEmpty(e.number) || e.number.startsWith("-");
+        return Actions.isPrivate(e);
     }
 
     private void callBack(CallLogReader.Entry e) {
@@ -248,7 +252,7 @@ public class MissedCallsActivity extends Activity {
         return e.number;
     }
 
-    private String formatTime(long t) {
+    static String formatTime(Context c, long t) {
         Calendar now = Calendar.getInstance();
         Calendar then = Calendar.getInstance();
         then.setTimeInMillis(t);
@@ -256,7 +260,7 @@ public class MissedCallsActivity extends Activity {
         if (now.get(Calendar.YEAR) == then.get(Calendar.YEAR)) {
             int diff = now.get(Calendar.DAY_OF_YEAR) - then.get(Calendar.DAY_OF_YEAR);
             if (diff == 0) return hm;
-            if (diff == 1) return getString(R.string.yesterday) + " " + hm;
+            if (diff == 1) return c.getString(R.string.yesterday) + " " + hm;
         }
         return new SimpleDateFormat("dd/MM HH:mm", Locale.getDefault()).format(new Date(t));
     }
@@ -277,7 +281,7 @@ public class MissedCallsActivity extends Activity {
             TextView count = v.findViewById(R.id.count);
 
             name.setText(displayName(MissedCallsActivity.this, e));
-            String time = formatTime(e.lastTime);
+            String time = formatTime(MissedCallsActivity.this, e.lastTime);
             boolean showNumber = !TextUtils.isEmpty(e.name) && !isPrivate(e);
             details.setText(showNumber ? e.number + "  ·  " + time : time);
             if (e.count > 1) {

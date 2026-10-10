@@ -47,9 +47,7 @@ public class SetupActivity extends Activity {
             @Override public void onClick(View v) { openAutostart(); }
         });
         findViewById(R.id.btn_test).setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                startActivity(Notifier.screenIntent(SetupActivity.this));
-            }
+            @Override public void onClick(View v) { showTest(); }
         });
         hideBtn.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) { toggleIcon(); }
@@ -70,6 +68,25 @@ public class SetupActivity extends Activity {
     protected void onResume() {
         super.onResume();
         refreshStatus();
+    }
+
+    /** מציג את החלונות השקופים עם השיחות הקיימות, או עם דוגמה אם אין. */
+    private void showTest() {
+        if (!Notifier.canOverlay(this)) {
+            openOverlaySettings();
+            return;
+        }
+        java.util.List<CallLogReader.Entry> list = CallLogReader.load(this);
+        if (list.isEmpty()) {
+            CallLogReader.Entry demo = new CallLogReader.Entry();
+            demo.name = getString(R.string.demo_name);
+            demo.number = "";
+            demo.count = 2;
+            demo.lastTime = System.currentTimeMillis();
+            list.add(demo);
+        }
+        OverlayManager.show(this, list);
+        moveTaskToBack(true);   // חזרה למסך הראשי כדי לראות את החלונות
     }
 
     private String[] neededPermissions() {

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <TextView
+        android:id="@+id/ov_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFFFF"
+        android:shadowColor="#FF000000"
+        android:shadowRadius="4"
+        android:paddingLeft="4dp"
+        android:paddingStart="4dp"
+        android:textAlignment="viewStart" />
+
+    <TextView
+        android:id="@+id/ov_clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_clear"
+        android:textSize="13sp"
+        android:textColor="#FFFFFFFF"
+        android:focusable="true"
+        android:clickable="true"
+        android:background="@drawable/overlay_card_bg"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp" />
+
+    <TextView
+        android:id="@+id/ov_hide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_hide"
+        android:textSize="13sp"
+        android:textColor="#FFFFFFFF"
+        android:focusable="true"
+        android:clickable="true"
+        android:background="@drawable/overlay_card_bg"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp" />
+</LinearLayout>
