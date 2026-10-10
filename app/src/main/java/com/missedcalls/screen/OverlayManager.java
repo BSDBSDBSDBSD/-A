@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.PixelFormat;
 import android.os.Build;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -169,8 +168,8 @@ final class OverlayManager {
 
         name.setText(MissedCallsActivity.displayName(c, e));
         String time = MissedCallsActivity.formatTime(c, e.lastTime);
-        boolean showNumber = !TextUtils.isEmpty(e.name) && !Actions.isPrivate(e);
-        details.setText(showNumber ? e.number + "  ·  " + time : time);
+        // שם איש הקשר, או המספר אם אין שם - בלי כפילות. מתחת רק השעה
+        details.setText(time);
         if (e.count > 1) {
             count.setVisibility(View.VISIBLE);
             count.setText("×" + e.count);

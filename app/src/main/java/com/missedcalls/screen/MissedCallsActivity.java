@@ -282,8 +282,8 @@ public class MissedCallsActivity extends Activity {
 
             name.setText(displayName(MissedCallsActivity.this, e));
             String time = formatTime(MissedCallsActivity.this, e.lastTime);
-            boolean showNumber = !TextUtils.isEmpty(e.name) && !isPrivate(e);
-            details.setText(showNumber ? e.number + "  ·  " + time : time);
+            // שם איש הקשר, או המספר אם אין שם - בלי כפילות. מתחת רק השעה
+            details.setText(time);
             if (e.count > 1) {
                 count.setVisibility(View.VISIBLE);
                 count.setText("×" + e.count);
