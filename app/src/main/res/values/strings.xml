@@ -10,7 +10,6 @@
     <string name="hint">OK / ירוק חיוג · * הודעה · # הסר · תפריט אפשרויות</string>
     <string name="btn_clear">נקה הכל</string>
     <string name="btn_close">סגור</string>
-    <string name="overlay_keys">OK חיוג · * הודעה · # הסר · 0 נקה הכל · חזור הסתר</string>
     <string name="overlay_more">+%1$d נוספים – לרשימה המלאה</string>
     <string name="demo_name">דוגמה – כך זה ייראה</string>
     <string name="opt_call">התקשר</string>

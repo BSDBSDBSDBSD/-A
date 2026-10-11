@@ -22,7 +22,7 @@ import java.util.List;
  * חלונות שקופים קטנים, אחד לכל מתקשר, שצפים בראש המסך מעל המסך הראשי.
  * אין שירות ברקע ואין טיימרים: החלונות הם תצוגה בלבד ולא צורכים סוללה כשהם מוצגים.
  *
- * בנוי למכשיר מקשים בלבד, בלי מגע:
+ * בנוי למכשיר מקשים בלבד, בלי מגע. במסך נעול: רק בחירה וחיוג (OK / ירוק).
  *   למעלה/למטה - מעבר בין חלונות | OK או ירוק - חיוג חוזר | * - הודעה
  *   # - הסרת המתקשר הזה | 0 - נקה הכל | חזור - הסתרה (השיחות נשמרות)
  */
@@ -88,10 +88,6 @@ final class OverlayManager {
                 : WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
         int flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL      // נגיעות מחוץ לחלונות עוברות למסך הראשי
                 | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-        if (Notifier.isLocked(c)) {
-            // בזמן נעילה החלונות לא תופסים מקשים, כדי לא להפריע לפתיחת הנעילה במקשים
-            flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        }
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -100,17 +96,29 @@ final class OverlayManager {
         return lp;
     }
 
-    /** אחרי פתיחת הנעילה - מאפשר ניווט במקשים בין החלונות. */
+    /**
+     * האם החלונות מקבלים מקשים. כשהמכשיר נעול והמשתמש לוחץ מקש שאינו חיוג,
+     * החלונות מוותרים על המקשים (אבל נשארים על המסך) כדי שאפשר יהיה להקיש את קוד הנעילה.
+     */
+    static void setTakesKeys(Context ctx, boolean takes) {
+        if (root == null || params == null) return;
+        boolean now = (params.flags & WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE) == 0;
+        if (now != takes) {
+            if (takes) params.flags &= ~WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+            else params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+            WindowManager wm = (WindowManager) ctx.getApplicationContext()
+                    .getSystemService(Context.WINDOW_SERVICE);
+            try { if (wm != null) wm.updateViewLayout(root, params); } catch (Exception ignored) { }
+        }
+        if (takes) root.focusFirst();
+    }
+
+    /** אחרי פתיחת הנעילה - החלונות מקבלים שוב מקשים. */
     private static void listenForUnlock(Context c) {
         if (unlockReceiver != null) return;
         unlockReceiver = new BroadcastReceiver() {
             @Override public void onReceive(Context context, Intent intent) {
-                if (root == null || params == null) return;
-                params.flags &= ~WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-                WindowManager wm = (WindowManager) context.getApplicationContext()
-                        .getSystemService(Context.WINDOW_SERVICE);
-                try { if (wm != null) wm.updateViewLayout(root, params); } catch (Exception ignored) { }
-                root.focusFirst();
+                setTakesKeys(context, true);
             }
         };
         c.registerReceiver(unlockReceiver, new IntentFilter(Intent.ACTION_USER_PRESENT));
@@ -146,9 +154,7 @@ final class OverlayManager {
             root.addView(more);
         }
 
-        // שורת עזרה קבועה: מה עושה כל מקש
-        root.addView(inf.inflate(R.layout.overlay_keys, root, false));
-        root.focusFirst();
+        setTakesKeys(c, true);   // שיחה חדשה - החלונות מקבלים מקשים, גם במסך נעול
     }
 
     private static View card(final Context c, LayoutInflater inf, final CallLogReader.Entry e) {
@@ -216,6 +222,31 @@ final class OverlayManager {
             // פעולות מתבצעות בעזיבת המקש, כדי שהעזיבה לא תגיע לאפליקציה שמתחת
             boolean up = event.getAction() == KeyEvent.ACTION_UP;
             final CallLogReader.Entry e = focusedEntry();
+
+            if (Notifier.isLocked(c)) {
+                // מסך נעול: אפשר רק לבחור מתקשר ולחייג אליו.
+                // כל מקש אחר מעביר את המקשים למסך הנעילה, בלי להסתיר את החלונות.
+                switch (k) {
+                    case KeyEvent.KEYCODE_DPAD_UP:
+                    case KeyEvent.KEYCODE_DPAD_DOWN:
+                    case KeyEvent.KEYCODE_DPAD_CENTER:
+                    case KeyEvent.KEYCODE_ENTER:
+                        return super.dispatchKeyEvent(event);
+                    case KeyEvent.KEYCODE_CALL:
+                        if (up && e != null) later(new Runnable() {
+                            @Override public void run() { Actions.call(c, e); refresh(c); }
+                        });
+                        return true;
+                    default:
+                        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                            later(new Runnable() {
+                                @Override public void run() { setTakesKeys(c, false); }
+                            });
+                        }
+                        return true;
+                }
+            }
+
             switch (k) {
                 case KeyEvent.KEYCODE_DPAD_UP:
                 case KeyEvent.KEYCODE_DPAD_DOWN:
